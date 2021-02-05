@@ -1,29 +1,38 @@
 <?php
+//fill out with connection params
+$dbhost = "localhost";
+$dbuser = "root";
+$dbpass = "example";
+$db = "company1";
+$conn = new mysqli("db", "root", "example", "company1") or die("Connect failed: %s\n". $conn -> error);
 
-echo "Hello from the docker yooooo container";
+//file path
+$filename = 'ratings.csv';
 
-$mysqli = new mysqli("db", "root", "example", "company1");
+//open file
+$file = fopen($filename, "r");
 
-$sql = "INSERT INTO users (name, fav_color) VALUES('Lil Sneazy', 'Yellow')";
-$result = $mysqli->query($sql);
-$sql = "INSERT INTO users (name, fav_color) VALUES('Nick Jonas', 'Brown')";
-$result = $mysqli->query($sql);
-$sql = "INSERT INTO users (name, fav_color) VALUES('Maroon 5', 'Maroon')";
-$result = $mysqli->query($sql);
-$sql = "INSERT INTO users (name, fav_color) VALUES('Tommy Baker', '043A2B')";
-$result = $mysqli->query($sql);
+while (($column = fgetcsv($file, 100, ",")) !== FALSE) {
+
+    $userId = mysqli_real_escape_string($conn, $column[0]);
+    $movieId = mysqli_real_escape_string($conn, $column[1]);
+    $rating = mysqli_real_escape_string($conn, $column[2]);
+    $timestamp = mysqli_real_escape_string($conn, $column[3]);
 
 
-$sql = 'SELECT * FROM users';
 
-if ($result = $mysqli->query($sql)) {
-    while ($data = $result->fetch_object()) {
-        $users[] = $data;
-    }
+    //rename timestamp -> timest
+    $sql = "INSERT INTO Rating (ratingId, userId, movieId, rating, timest) VALUES 
+    (0, $userId, $movieId, $rating, $timestamp)";
+
+    if ($conn->query($sql) === TRUE) {
+    echo "created successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
 }
+  
+$conn->close();
 
-foreach ($users as $user) {
-    echo "<br>";
-    echo $user->name . " " . $user->fav_color;
-    echo "<br>";
-}
+?>
