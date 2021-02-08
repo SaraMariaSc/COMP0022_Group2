@@ -11,6 +11,7 @@ $filename = 'ratings.csv';
 
 //open file
 $file = fopen($filename, "r");
+fgetcsv($file, 100, ",");
 
 while (($column = fgetcsv($file, 100, ",")) !== FALSE) {
 
