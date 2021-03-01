@@ -3,37 +3,46 @@
 $dbhost = "localhost";
 $dbuser = "root";
 $dbpass = "example";
-$db = "company1";
-$conn = new mysqli("db", "root", "example", "company1") or die("Connect failed: %s\n". $conn -> error);
+$db = "MovieDB";
+$conn = new mysqli("db", "root", "example", "MovieDB") or die("Connect failed: %s\n". $conn -> error);
 
-//file path
-$filename = 'ratings.csv';
+//To use this make sure to:
+//  have the MovieDB database created 
+//  create Movie table
+//  populate Rating and Movie tables
+//  add the new rating column to the Movie table
+//  add the average rating to each movie in the Movie table
 
-//open file
-$file = fopen($filename, "r");
-fgetcsv($file, 100, ",");
+//look through some_queries.php to get the code
 
-while (($column = fgetcsv($file, 100, ",")) !== FALSE) {
+//ratings.csv contains the reviews for movies with id betweeen 1 and 150
+//movies contains the movies with id between 1 and 150
+$sql_movies = "SELECT * FROM Movies";
+$result = $conn->query($sql_movies);
 
-    $userId = mysqli_real_escape_string($conn, $column[0]);
-    $movieId = mysqli_real_escape_string($conn, $column[1]);
-    $rating = mysqli_real_escape_string($conn, $column[2]);
-    $timestamp = mysqli_real_escape_string($conn, $column[3]);
-
-
-
-    //rename timestamp -> timest
-    $sql = "INSERT INTO Rating (ratingId, userId, movieId, rating, timest) VALUES 
-    (0, $userId, $movieId, $rating, $timestamp)";
-
-    if ($conn->query($sql) === TRUE) {
-    echo "created successfully";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
+while($movie =  mysqli_fetch_array($result))
+{
+    $movieId = $movie['movieId'];
+  
+    $sql_rating = "SELECT AVG(rating) AS avg_rating FROM Ratings WHERE movieId = ?";
+    if( $stmt = $conn->prepare($sql_rating))
+        $stmt->bind_param("s", $movieId);
+    $stmt->execute();
+    $result_rating = $stmt->get_result(); 
+    $row = mysqli_fetch_array($result_rating);
+        echo $movieId." ".$row['avg_rating']."<br>";
+    $sql_update = "UPDATE Movies SET rating = '$row[avg_rating]' WHERE movieId = $movieId";
+   
+    if(!mysqli_query($conn, $sql_update)){
+        echo "ERROR: Could not execute $sql_update. " . mysqli_error($link);
+    } 
 
 }
-  
+
+//not case sensitive
+include "search.html";
+
+//Closing the connection
 $conn->close();
 
 ?>
