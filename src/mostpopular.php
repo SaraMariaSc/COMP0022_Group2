@@ -1,17 +1,3 @@
-<!-- 
-        To use this make sure to:
-         have the MovieDB database created 
-         create Movie table
-         populate Ratings and Movies tables
-         add the new rating column to the Movie table
-         add the average rating to each movie in the Movie table
-         add the new stddev column to Ratings table
-         add standard deviation to Movies table
-
-        look through some_queries.php to get the code
-
-        ratings.csv contains the reviews for movies with id betweeen 1 and 800
-        movies.csv contains the movies with id between 1 and 800 -->
  
 <!DOCTYPE HTML>  
 <html>
@@ -31,15 +17,15 @@
         <a class="navbar-brand" href="#">MovieDB</a>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li ><a href="mostpopular.php">Most Popular</a></li>
+                <li><a href="index.php">Home</a></li>
+                <li class="active"><a href="#">Most Popular</a></li>
                 <li><a href="polarising.php">Most Polarising</a></li>
                 
             </ul>
             <div class="col-sm-3 col-md-3 pull-right">
                 <form class="navbar-form float-right" action="search.php" role="search">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="search" placeholder="Search">
+                        <input type="text" class="form-control" name="search" placeholder="Search" >
                         <div class="input-group-btn">
                             <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
@@ -50,55 +36,63 @@
         </nav>
     </header>
 
+    <!-- otherwise it won't know to access the css -->
     <style>
          <?php include 'css/style.css'; ?>
     </style>
-
-    <div class="hero-area">
-        <img src="media/movie.jpg" class="banner-img">
-        <h1 class="title">Welcome to Movie DB</h1>
-    </div>
-
-    <div> 
-        <h1 class="center">Top 10 Movies</h1>
+    <div class="results"> 
+        
+    <h1>Most Popular Movies </h1>
     <?php
-        //fill out with connection params
+        //create connection
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "example";
         $db = "MovieDB";
         $conn = new mysqli("db", "root", "example", "MovieDB") or die("Connect failed: %s\n". $conn -> error);
 
-      
-        //Display top 10 movies
-        $sql = "SELECT title 
-                FROM Movies
-                ORDER BY rating DESC LIMIT 10";
 
+        $sql = "SELECT *
+                FROM Movies
+                ORDER BY rating DESC";
         $result = $conn->query($sql);
 
-        echo "<table class='table table-hover top10-width'>";
-            echo "<thead>";
-                echo "<tr>";
-                    echo "<th> </th>";
-                    echo "<th >Title</th>";
-                echo "</tr>";
-            echo " </thead>";
+        echo "<table class='table table-hover'>";
+        echo "<thead >";
+        echo "<tr>";
+            echo "<th> </th>";
+            echo "<th>Movie</th>";
+            echo "<th scope='col'>Genres</th>";
+            echo "<th scope='col'>Rating</th>";
+            echo "<th scope='col'>Is it polarising?</th>";
+        echo "</tr>";
+        echo " </thead>";
 
-        //Index for each result
         $position = 1;
-        
         while($row = mysqli_fetch_array($result)){
             echo "<tr>";
-                echo "<td>" . $position . "</td>";
-                echo "<td>" . $row['title'] . "</td>";
-            echo "</tr>";
-            $position = $position + 1;
+            echo "<td>" . $position . "</td>";
+            echo "<td>" . $row['title'] . "</td>";
+            echo "<td>" . $row['genres'] . "</td>";
+            echo "<td>" . $row['rating'] . "</td>";
+
+            //is it polarising?
+            //I observed that the max stddev is 2 and the min is 0
+            echo "<td class='polarising'>";
+                if( $row['stddev'] > 1.5)
+                    echo "Very polarising";
+                else if($row['stddev'] > 1)
+                    echo "Somewhat polarising";
+                else if($row['stddev'] > 0.5)
+                    echo "Not very polarising";
+                else if($row['stddev'] <= 0.5)
+                    echo "Not polarising" ;
+                echo "</tr>";
+            echo "</td>";
+            $position = $position + 1; 
         }
         echo "</table>";
-        $conn->close();
-?>
-
+    ?> 
     </div>
 </body>
 </html>
