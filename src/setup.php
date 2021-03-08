@@ -1,3 +1,9 @@
+//company1 renamed to MovieDB
+//assuming you already have the Ratings
+//this creates, alters or populates the Ratings, Movies and Tags tables
+
+
+
 <?php
         //create connection
         $dbhost = "localhost";
@@ -5,7 +11,13 @@
         $dbpass = "example";
         $db = "MovieDB";
         $conn = new mysqli("db", "root", "example", "MovieDB") or die("Connect failed: %s\n". $conn -> error);
-
+//Delete all entries in Rating
+$sql1 = "DELETE FROM Ratings";
+if(mysqli_query($conn, $sql1)){
+    echo "Records were deleted successfully.";
+} else{
+    echo "ERROR: Could not able to execute $sql. " . mysqli_error($link);
+}
 //Populate Ratings table
 // open file
 $filename = 'ratings.csv';
@@ -28,7 +40,7 @@ while (($column = fgetcsv($file, 200, ",")) !== FALSE) {
 
 }
 
-
+   
         //Creating Movies table
 $movieFile = "movies.csv";
 $file = fopen($movieFile, "r");
@@ -176,4 +188,4 @@ while($movie =  mysqli_fetch_array($result))
         echo "ERROR: Could not execute $sql_update. " . mysqli_error($link);
     }     
     
-}
+}?>
