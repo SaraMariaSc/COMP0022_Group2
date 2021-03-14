@@ -72,7 +72,7 @@
         while($row = mysqli_fetch_array($result)){
             echo "<tr>";
             echo "<td>" . $position . "</td>";
-            echo "<td><a href='details.php?ID={$row['movieId']}'> {$row['title']} </a></td>";
+            echo "<td>" . $row['title'] . "</td>";
             echo "<td>" . $row['genres'] . "</td>";
             echo "<td>" . $row['rating'] . "</td>";
 

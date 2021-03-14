@@ -79,9 +79,6 @@
                     <div class="sort-item">
                         <button class="btn btn-default" type="submit" name="polarising" <?php echo $filter='3'; ?>>Most Polarising</button>
                     </div>
-                    <div class="sort-item">
-                        <button class="btn btn-default" type="submit" name="tags" <?php echo $filter='4'; ?>>Tags</button>
-                    </div>
                 </form>
                 
             </div>
@@ -99,73 +96,68 @@
         else if(isset($_POST['polarising'])){
             $orderString = "stddev";
         }
-        else if(isset($_POST['tags'])){
-            $orderString = "tags";
+
+        //search by name, id or genre
+        $searchQuery = "SELECT * FROM Movies WHERE movieId = ? OR title LIKE ? OR genres LIKE ?";
+        $searchQuery2 = "SELECT genres,title,tags FROM Movies,Tags WHERE Movies.movieId=Tags.movieId Group By Movies.movieId";
+
+
+        
+        
+   if( $result = $conn->query($searchQuery2)===FALSE){
+    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "<br>";
+   }$result = $conn->query($searchQuery2);
+        while($row = mysqli_fetch_array($result)){
+            echo $row['title']." ".$row['tags']."<br>";
         }
-        $searchQuery2 = "SELECT  genres,title,rating,stddev, Movies.movieId as id FROM Movies WHERE title LIKE ? OR genres LIKE ?
-                        UNION
-                        SELECT genres,title,rating,stddev, Movies.movieId as id FROM Movies JOIN Tags ON (Movies.movieId=Tags.movieId)  AND  tags LIKE ?";
+        //If filter was chosen, add "order by" in the query
+        // if ($orderString !== '') {
+        //     // Concatenate
+        //     $searchQuery .= " ORDER BY " . $orderString . " ASC";
+        // }
 
-    
-       //If filter was chosen change the query
-        if ($orderString !== '') {
-            //if tags button was chosen change the query completely
-            if(isset($_POST['tags']))
-                $searchQuery2 = "SELECT genres,title,rating,stddev, Movies.movieId as id FROM Movies JOIN Tags ON (Movies.movieId=Tags.movieId)  AND  tags LIKE ? AND  tags LIKE ? AND  tags LIKE ?";
+        // $likeQuery = "%" . $input . "%";
+        // $stmt = $conn->prepare($searchQuery);
+        // $stmt->bind_param("sss", $input, $likeQuery, $likeQuery);
+        // $stmt->execute();
+        // $result = $stmt->get_result(); 
+          
+        // echo "<table class='table table-hover'>";
+        //     echo "<thead >";
+        //         echo "<tr>";
+        //             echo "<th> </th>";
+        //             echo "<th scope='col'>Movie</th>";
+        //             echo "<th scope='col'>Genres</th>";
+        //             echo "<th scope='col'>Rating</th>";
+        //             echo "<th scope='col'>Is it polarising?</th>";
+        //         echo "</tr>";
+        //     echo " </thead>";
 
-            
-            else// Add order by to the query
-                $searchQuery2 .= " ORDER BY " . $orderString . " ASC";
-        }
+        // $position = 1;
+        // while($row = mysqli_fetch_array($result)){
+        //     echo "<tr>";
+        //     echo "<td>" . $position . "</td>";
+        //     echo "<td>" . $row['title'] . "</td>";
+        //     echo "<td>" . $row['genres'] . "</td>";
+        //     echo "<td>" . $row['rating'] . "</td>";
 
-        $likeQuery = "%" . $input . "%";
-        $stmt = $conn->prepare($searchQuery2);
-        $stmt->bind_param("sss",$likeQuery, $likeQuery, $likeQuery);
-        $stmt->execute();
-        $result = $stmt->get_result(); 
-
-        //if there are results display them
-        if (!mysqli_num_rows($result)==0) 
-        {    
-            echo "<table class='table table-hover'>";
-                echo "<thead >";
-                    echo "<tr>";
-                        echo "<th> </th>";
-                        echo "<th scope='col'>Movie</th>";
-                        echo "<th scope='col'>Genres</th>";
-                        echo "<th scope='col'>Rating</th>";
-                        echo "<th scope='col'>Is it polarising?</th>";
-                    echo "</tr>";
-                echo " </thead>";
-
-            $position = 1;
-            while($row = mysqli_fetch_array($result)){
-                echo "<tr>";
-                echo "<td>" . $position . "</td>";
-                echo "<td><a href='details.php?ID={$row['id']}'> {$row['title']} </a></td>";
-                echo "<td>" . $row['genres'] . "</td>";
-                echo "<td>" . $row['rating'] . "</td>";
-
-                //is it polarising?
-                //I observed that the max stddev is 2 and the min is 0
-                echo "<td class='polarising'>";
-                    if( $row['stddev'] > 1.5)
-                        echo "Very polarising";
-                    else if($row['stddev'] > 1)
-                        echo "Somewhat polarising";
-                    else if($row['stddev'] > 0.5)
-                        echo "Not very polarising";
-                    else if($row['stddev'] <= 0.5)
-                        echo "Not polarising" ;
-                    echo "</tr>";
-                echo "</td>";
-                $position = $position + 1;
-            }
-            echo "</table>";
-        }
-        else{
-            echo "0 results found";
-        }
+        //     //is it polarising?
+        //     //I observed that the max stddev is 2 and the min is 0
+        //     echo "<td class='polarising'>";
+        //         if( $row['stddev'] > 1.5)
+        //             echo "Very polarising";
+        //         else if($row['stddev'] > 1)
+        //             echo "Somewhat polarising";
+        //         else if($row['stddev'] > 0.5)
+        //             echo "Not very polarising";
+        //         else if($row['stddev'] <= 0.5)
+        //             echo "Not polarising" ;
+        //         echo "</tr>";
+        //     echo "</td>";
+        //     $position = $position + 1;
+        // }
+        // echo "</table>";
             
         
         ?>

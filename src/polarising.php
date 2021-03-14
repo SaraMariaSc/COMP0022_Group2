@@ -87,7 +87,7 @@
             //Need to set up a cronjob to run this daily (0 0 * * * //thing)
 
             //
-            $sql = "SELECT title, rating, stddev FROM Movies ORDER BY stddev DESC";
+            $sql = "SELECT title, rating, stddev, Movies.movieId as id FROM Movies ORDER BY stddev DESC";
             $result = $conn->query($sql);
 
             echo "<table class='table table-hover'>";
@@ -106,7 +106,7 @@
             while($row = mysqli_fetch_array($result)){
                 echo "<tr>";
                 echo "<td>" . $position . "</td>";
-                echo "<td>" . $row['title'] . "</td>";
+                echo "<td><a href='details.php?ID={$row['id']}'> {$row['title']} </a></td>";
                 echo "<td>" . $row['rating'] . "</td>";
                 // echo "<td>" . $row['stddev'] . "</td>";
                 echo "</tr>";

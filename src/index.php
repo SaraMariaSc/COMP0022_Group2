@@ -62,6 +62,7 @@
     <div> 
         <h1 class="center">Top 10 Movies</h1>
     <?php
+
         //fill out with connection params
         $dbhost = "localhost";
         $dbuser = "root";
@@ -69,9 +70,8 @@
         $db = "MovieDB";
         $conn = new mysqli("db", "root", "example", "MovieDB") or die("Connect failed: %s\n". $conn -> error);
 
-      
         //Display top 10 movies
-        $sql = "SELECT title 
+        $sql = "SELECT title, movieId 
                 FROM Movies
                 ORDER BY rating DESC LIMIT 10";
 
@@ -90,8 +90,8 @@
         
         while($row = mysqli_fetch_array($result)){
             echo "<tr>";
-                echo "<td>" . $position . "</td>";
-                echo "<td>" . $row['title'] . "</td>";
+                echo "<td>" .$position . "</td>";
+                echo "<td><a href='details.php?ID={$row['movieId']}'> {$row['title']} </a></td>";
             echo "</tr>";
             $position = $position + 1;
         }

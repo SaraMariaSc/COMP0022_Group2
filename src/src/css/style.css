@@ -12,7 +12,7 @@
     color: blue;
 }
 
-.results, #details-content{
+.results{
     width:60%;
     margin:0 auto;
 }
@@ -70,4 +70,3 @@
     display: flex;
      align-items: baseline;
 }
-
