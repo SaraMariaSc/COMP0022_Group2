@@ -1,6 +1,5 @@
 <?php
 // Connect to database
-$conn = mysqli_connect("localhost", "root", "");
 $dbhost = "localhost";
 $dbuser = "root";
 $dbpass = "example";

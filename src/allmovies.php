@@ -1,4 +1,7 @@
- 
+<?php
+    // Start the session
+    session_start();
+?>
 <!DOCTYPE HTML>  
 <html>
 <head>
@@ -18,8 +21,8 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><a href="index.php">Home</a></li>
-                    <li><a href="allmovies.php">All Movies</a></li>
-                    <li class="active"><a href="#">Most Popular</a></li>
+                    <li class="active"><a href="#">All Movies</a></li>
+                    <li><a href="mostpopular.php">Most Popular</a></li>
                     <li><a href="polarising.php">Most Polarising</a></li>
                     
                 </ul>
@@ -43,14 +46,61 @@
         </style>
         <div class="results"> 
             
-        <h1>Most Popular Movies </h1>
+        <h1>All Movies </h1>
+        <div>
+                <div class="sort" >
+                    <h3 class="sort-item"> Sort by </h3>
+                    <form class="search-form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                        <div class="sort-item">
+                            <button class="btn btn-default" type="submit" name="title" <?php echo $filter='1'; ?>>Title</button>
+                        </div >
+                        <!-- <div class="sort-item">
+                            <button class="btn btn-default" type="submit" name="rating" <?php echo $filter='2'; ?>>Rating</button>
+                        </div> -->
+                        <div class="sort-item">
+                            <button class="btn btn-default" type="submit" name="year" <?php echo $filter='3'; ?>>Year</button>
+                        </div>
+                        <!-- <div class="sort-item">
+                            <button class="btn btn-default" type="submit" name="asc" <?php echo $filter='4'; ?>>ASC</button>
+                        </div>
+                        <div class="sort-item">
+                            <button class="btn btn-default" type="submit" name="desc" <?php echo $filter='5'; ?>>DESC</button>
+                        </div> -->
+                    </form>
+                    
+                </div>
+            </div>
         <?php
             //create connection
             include "connect.php";
 
-            $sql = "SELECT *
-                    FROM Movies
-                    ORDER BY rating DESC";
+            //see which filter is chosen
+            $orderString = ''; // default 
+            if (isset($_POST['title'])){
+                $orderString = "title";
+            }
+            // else if(isset($_POST['rating'])){
+            //     $orderString = "rating";
+            // }
+            else if(isset($_POST['year'])){
+                $orderString = "release_year";
+            }
+            // else if(isset($_POST['asc'])){
+            //     $order = "ASC";
+            // }
+            // else if(isset($_POST['desc'])){
+            //     $order = "DESC";
+            // }
+            $sql = "SELECT * FROM Movies";
+            if ($orderString !== '') {
+                // Add order by to the query
+                $sql .= " ORDER BY " . $orderString ;
+            }
+            // if ($order !== '') {
+            //     // Add order by to the query
+            //     $sql .= " " . $order;
+            // }
+
             $result = $conn->query($sql);
 
             echo "<table class='table table-hover'>";
