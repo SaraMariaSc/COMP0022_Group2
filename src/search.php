@@ -114,7 +114,7 @@
             if ($orderString !== '') {
                 //if tags button was chosen change the query completely
                 if(isset($_POST['tags']))
-                    $searchQuery2 = "SELECT title,rating,stddev,release_year, Movies.movieId as id FROM Movies JOIN Tags ON (Movies.movieId=Tags.movieId)  AND  tags LIKE ? AND  tags LIKE ? AND  tags LIKE ? ";
+                    $searchQuery2 = "SELECT DISTINCT title,rating,stddev,release_year, Movies.movieId as id FROM Movies JOIN Tags ON (Movies.movieId=Tags.movieId)  AND  tags LIKE ? AND  tags LIKE ? AND  tags LIKE ? ";
 
                 
                 else// Add order by to the query
