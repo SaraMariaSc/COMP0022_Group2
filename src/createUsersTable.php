@@ -25,8 +25,8 @@
         $maxFilmId = 193609;
         for ($i = 1; $i <= $maxUserId; $i++){
             for ($j = 0; $j < count($genres); $j++){
-                $sql = "SELECT AVG(Ratings.rating) FROM Ratings INNER JOIN Movies ON Ratings.movieId = Movies.movieId WHERE userId = $i AND genres LIKE '%$genres[$j]%'";//$genres[$j] = 1";
-                //echo $sql;
+                $sql = "SELECT AVG(Ratings.rating) FROM Ratings INNER JOIN Movies ON Ratings.movieId = Movies.movieId WHERE userId = $i AND $genres[$j] = 1";
+                echo $sql;
                 $result = $conn->query($sql);
                 //echo $result[1];
                 $row = mysqli_fetch_array($result);
