@@ -6,10 +6,33 @@
         $db = "MovieDB";
         $conn = new mysqli("db", "root", "example", "MovieDB") or die("Connect failed: %s\n". $conn -> error);
         
+
         $genres = ["Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "FilmNoir", "Horror", "Musical", "Mystery", "Romance", "SciFi",  "Thriller", "War", "Western"];
         
-        $xGenres = ["Action", "Adventure"];//genres for film x
-        $xTags = ["remake", "pixar"];//tags for film x
+        $ID = mysqli_real_escape_string($conn, $_GET['ID']);
+
+        $sql = "SELECT distinct tags FROM Tags WHERE movieId = '$ID'";
+        $result = mysqli_query($conn, $sql);
+        $tags = mysqli_fetch_array($result);
+        $genreSQL = "SELECT * FROM Movies WHERE movieId = $ID";
+        $genreResult = $conn->query($genreSQL);
+
+        $xGenres = array();
+        if ($genreResult->num_rows > 0){
+            while($row = $genreResult->fetch_assoc()){
+                //print_r($row);
+                for ($i = 0; $i < count($genres); $i ++){
+                    
+                    if ($row[$genres[$i]] == 1){
+                        array_push($xGenres, $genres[$i]);
+                    }
+                }
+            }
+        }
+        
+        //$xGenres = ["Action", "Adventure"];//genres for film x
+        //$xTags = ["remake", "pixar"];//tags for film x
+        $xTags = $tags;
 
         $xGenresStr = "(" . $xGenres[0];
         for ($i = 1; $i < count($xGenres); $i++){
@@ -17,9 +40,11 @@
         }
         $xGenresStr .= ")/" . count($xGenres);
 
-        $sum = "AVG(IFNULL(" . $xGenres[0] . ", 2.75))/2";
+        $genreCount = count($xGenres);
+
+        $sum = "AVG(IFNULL(" . $xGenres[0] . ", 2.75))/$genreCount";
         for ($i = 1; $i < count($xGenres); $i++){
-            $sum .= " + AVG(IFNULL(" . $xGenres[$i] . ", 2.75))/2";
+            $sum .= " + AVG(IFNULL(" . $xGenres[$i] . ", 2.75))/$genreCount";
         }
 
         $xTagsStr = "'" . $xTags[0] . "'";//
@@ -38,24 +63,30 @@
         $gtem = 0;//>=2.75 (the midpoint)
         $other = 0;
 
-        while($row = $result->fetch_assoc()){
-            if ($row["score"] >= 4){
-                $gte4++;
-            }
-            else if ($row["score"] >= 2.75){
-                $gtem++;
-            }
-            else{
-                $other++;
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()){
+                if ($row["score"] >= 4){
+                    $gte4++;
+                }
+                else if ($row["score"] >= 2.75){
+                    $gtem++;
+                }
+                else{
+                    $other++;
+                }
             }
         }
         
         $total = $gte4 + $gtem + $other;
-        
-        $report = $gte4 . " users (" . (int)(100 * ($gte4/$total)) . "%) expected to really like it, ";
-        $report .= $gtem . " users (" . (int)(100 * ($gtem/$total)) . "%) expected to quite like it, ";
-        $report .= $other . " users (" . (int)(100 * ($other/$total)) . "%) expected to be indifferent.";
-        echo "\n\n\n" . $report;
+        if ($total > 0){
+            $report = $gte4 . " users (" . (int)(100 * ($gte4/$total)) . "%) expected to really like it, ";
+            $report .= $gtem . " users (" . (int)(100 * ($gtem/$total)) . "%) expected to quite like it, ";
+            $report .= $other . " users (" . (int)(100 * ($other/$total)) . "%) expected to be indifferent.";
+        }
+        else{
+            $report = "No data found regarding user preferences";
+        }
+        //echo "\n\n\n" . $report;
 
         /*
         $sql = "SELECT userId, $xGenresStr AS userGenreRatings
@@ -77,5 +108,5 @@
         */
 
 
-        $conn->close();
+        //$conn->close();
 ?>

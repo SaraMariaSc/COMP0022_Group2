@@ -7,6 +7,8 @@
     
     $ID = mysqli_real_escape_string($conn, $_GET['ID']);
 
+    
+
     $sql = "SELECT * FROM Movies JOIN Links ON Movies.movieId = Links.movieId WHERE Movies.movieId = '$ID'";
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_array($result);
@@ -26,6 +28,8 @@
     $sql = "SELECT group_concat(distinct tags) FROM Tags WHERE movieId = '$ID'";
     $result = mysqli_query($conn, $sql);
     $tags = mysqli_fetch_array($result);
+
+    include "useCase4.php";
 
     $sql = "SELECT userId, rating, movieId, timest FROM Ratings WHERE movieId = '$ID'";
     $ratings = mysqli_query($conn, $sql);
@@ -78,6 +82,8 @@
             <p><?php echo $row['genres']?></p>
             <h3><?php echo $row['rating']?></h3>
             <h3><?php echo $polarising?></h3>
+            <h3><?php echo $report?></h3>
+            
             <?php 
                 if(!empty($tags[0]))
                     echo "<h3>Tags: ". $tags[0] . "</h3>";
