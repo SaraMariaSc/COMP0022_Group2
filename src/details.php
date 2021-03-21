@@ -9,6 +9,7 @@
 
     include "useCase4.php";
 
+    //get the deatails from the movie
     $sql = "SELECT * FROM Movies JOIN Links ON Movies.movieId = Links.movieId WHERE Movies.movieId = '$ID'";
     $result = mysqli_query($conn, $sql);
     if(!$row = mysqli_fetch_array($result)===TRUE)
