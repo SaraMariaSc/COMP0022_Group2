@@ -7,15 +7,28 @@
     
     $ID = mysqli_real_escape_string($conn, $_GET['ID']);
 
-    
+    include "useCase4.php";
 
     $sql = "SELECT * FROM Movies JOIN Links ON Movies.movieId = Links.movieId WHERE Movies.movieId = '$ID'";
     $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_array($result);
+    if(!$row = mysqli_fetch_array($result)===TRUE)
+        echo "Error: " . $conn->error;
 
+
+    //get the genres
+    $genre_list = "";
+    $genres = ["Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "FilmNoir", "Horror", "Musical", "Mystery", "Romance", "SciFi",  "Thriller", "War", "Western"];
+    
+    for($i = 0; $i < count($genres); $i++){
+        if($row[$genres[$i]] == 1)
+            $genre_list .= $genres[$i] . " ";
+    }
+
+    //get the links
     $imdbLink = "https://www.imdb.com/title/tt".$row['imdbId']."/";
     $tmdbLink = "https://www.themoviedb.org/movie/".$row['tmdbId'];
    
+    //decide if it is polarising
     if( $row['stddev'] > 1.5)
         $polarising = "Very polarising";
     else if($row['stddev'] > 1)
@@ -25,14 +38,17 @@
     else if($row['stddev'] <= 0.5)
         $polarising = "Not polarising" ;
 
+    //get the tags for displaying
     $sql = "SELECT group_concat(distinct tags) FROM Tags WHERE movieId = '$ID'";
-    $result = mysqli_query($conn, $sql);
-    $tags = mysqli_fetch_array($result);
+    $result_tags = mysqli_query($conn, $sql);
+    $tags = mysqli_fetch_array($result_tags);
 
-    include "useCase4.php";
-
+    
+    //get the user ratings
     $sql = "SELECT userId, rating, movieId, timest FROM Ratings WHERE movieId = '$ID'";
     $ratings = mysqli_query($conn, $sql);
+
+
 ?>
 
 <DOCTYPE HTML>  
@@ -78,8 +94,8 @@
         </style>
         <div id="details-content" class="center">
             <h1><?php echo $row['title']?></h1>        
-            <h3><?php $row['release_year']?></h3>
-            <p><?php echo $row['genres']?></p>
+            <h3><?php echo $row['release_year']?></h3>
+            <h3><?php echo $genre_list ?></h3>
             <h3><?php echo $row['rating']?></h3>
             <h3><?php echo $polarising?></h3>
             <h3><?php echo $report?></h3>
