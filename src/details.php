@@ -105,8 +105,11 @@
             <h3><?php echo $report;?></h3>
             
             <?php 
-                if(!empty($tags[0]))
+                if(!empty($tags[0])){
                     echo "<h3>Tags: ". $tags[0] ."</h3>";
+                    include "useCase5.php";
+                    echo "<h3>Predicted rating: ". $pedicted_rating ."</h3>"    ;
+                }
             ?>
             <h3>View on <a href=<?php echo $imdbLink?>>Imdb</a></h3>
             <h3>View on <a href=<?php echo $tmdbLink?>>Tmdb</a></h3>
