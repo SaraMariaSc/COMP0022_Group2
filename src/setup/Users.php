@@ -19,7 +19,9 @@ while($user =  mysqli_fetch_array($result_users)){
     for ($j = 0; $j < count($genres); $j++)
     {
         $current_genre = "%".$genres[$j]."%";
-        $sql = "SELECT AVG(Ratings.rating) FROM Ratings INNER JOIN Movies ON Ratings.movieId = Movies.movieId WHERE userId = '".$userId."' AND genres LIKE '$current_genre'";
+        // $sql = "SELECT AVG(Ratings.rating) FROM Ratings INNER JOIN Movies ON Ratings.movieId = Movies.movieId WHERE userId = '".$userId."' AND genres LIKE '$current_genre'";
+        $sql = "SELECT AVG(Ratings.rating) FROM Ratings INNER JOIN Movies ON Ratings.movieId = Movies.movieId WHERE userId = '".$userId."' AND $genres[$j] = 1";
+        
         $result = $conn->query($sql);
         if (!$result) {
             printf("Error: %s\n", mysqli_error($conn));

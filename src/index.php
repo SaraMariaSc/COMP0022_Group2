@@ -1,5 +1,5 @@
 <?php
-require_once ("setup/db_setup.php");
+// require_once ("setup/db_setup.php");
 ?>
 <!DOCTYPE HTML>  
 <html>
