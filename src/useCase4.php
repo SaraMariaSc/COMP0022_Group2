@@ -11,7 +11,7 @@
         
         $ID = mysqli_real_escape_string($conn, $_GET['ID']);
 
-        $sql = "SELECT distinct tags FROM Tags WHERE movieId = '$ID'";
+        $sql = "SELECT group_concat(distinct tags) FROM Tags WHERE movieId = '$ID'";
         $result = mysqli_query($conn, $sql);
         $tags = mysqli_fetch_array($result);
         $genreSQL = "SELECT * FROM Movies WHERE movieId = $ID";
@@ -47,11 +47,13 @@
             $sum .= " + AVG(IFNULL(" . $xGenres[$i] . ", 2.75))/$genreCount";
         }
 
-        $xTagsStr = "'" . $xTags[0] . "'";//
-        for ($i = 1; $i < count($xTags); $i++){
-            $xTagsStr .= " or " . "'" . $xTags[$i] . "'";
+        $xTags = explode(",", $tags[0]);
+        if (count($xTags) > 0){
+            $xTagsStr = "'" . $xTags[0] . "'";
+            for ($i = 1; $i < count($xTags); $i++){
+                $xTagsStr .= " or " . "'" . $xTags[$i] . "'";
+            }
         }
-
         $sum .= " + SUM(IFNULL((tags = " . $xTagsStr . ")/5, 0))";
 
         //old method wasn't working, played around with executing queries directly until single SQL query reached.
@@ -86,6 +88,7 @@
         else{
             $report = "No data found regarding user preferences";
         }
+        echo "test";
         //echo "\n\n\n" . $report;
 
         /*
