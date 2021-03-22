@@ -7,23 +7,26 @@
     
     $ID = mysqli_real_escape_string($conn, $_GET['ID']);
 
-    include "useCase4.php";
+   // include "useCase4.php";
+    include "connect.php";
 
-    //get the deatails from the movie
-    $sql = "SELECT * FROM Movies JOIN Links ON Movies.movieId = Links.movieId WHERE Movies.movieId = '$ID'";
-    $result = mysqli_query($conn, $sql);
-    if(!$row = mysqli_fetch_array($result)===TRUE)
-        echo "Error: " . $conn->error;
-
-
-    //get the genres
-    $genre_list = "";
-    $genres = ["Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "FilmNoir", "Horror", "Musical", "Mystery", "Romance", "SciFi",  "Thriller", "War", "Western"];
-    
-    for($i = 0; $i < count($genres); $i++){
-        if($row[$genres[$i]] == 1)
-            $genre_list .= $genres[$i] . " ";
+    //get the deatails from the movie including links
+    $sql = "SELECT * FROM Movies JOIN Links ON Movies.movieId = Links.MovieId WHERE Movies.movieId = $ID";
+    if( mysqli_query($conn, $sql)===FALSE){
+        echo "Error can't get movie: " . $conn->error;
+        exit();
     }
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_array($result);
+
+        //get the genres
+        $genre_list = "";
+        $genres = ["Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "FilmNoir", "Horror", "Musical", "Mystery", "Romance", "SciFi",  "Thriller", "War", "Western"];
+        for($i = 0; $i < count($genres); $i++){
+            if($row[$genres[$i]] == 1)
+                $genre_list .= $genres[$i] . " ";
+            
+        }
 
     //get the links
     $imdbLink = "https://www.imdb.com/title/tt".$row['imdbId']."/";
@@ -70,7 +73,7 @@
             <a class="navbar-brand" href="index.php">MovieDB</a>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li ><a href="index.php" >Home</a></li>
+                    <li ><a href="index.php">Home</a></li>
                     <li ><a href="allmovies.php" >All Movies</a></li>
                     <li ><a href="mostpopular.php">Most Popular</a></li>
                     <li><a href="polarising.php">Most Polarising</a></li>
@@ -94,16 +97,16 @@
             <?php include 'css/style.css'; ?>
         </style>
         <div id="details-content" class="center">
-            <h1><?php echo $row['title']?></h1>        
-            <h3><?php echo $row['release_year']?></h3>
-            <h3><?php echo $genre_list ?></h3>
-            <h3><?php echo $row['rating']?></h3>
-            <h3><?php echo $polarising?></h3>
-            <h3><?php echo $report?></h3>
+            <h1><?php echo $row['title'];?></h1>        
+            <h3><?php echo $row['release_year'];?></h3>
+            <h3><?php echo $genre_list; ?></h3>
+            <h3><?php echo $row['rating'];?></h3>
+            <h3><?php echo $polarising;?></h3>
+            <h3><?php echo $report;?></h3>
             
             <?php 
                 if(!empty($tags[0]))
-                    echo "<h3>Tags: ". $tags[0] . "</h3>";
+                    echo "<h3>Tags: ". $tags[0] ."</h3>";
             ?>
             <h3>View on <a href=<?php echo $imdbLink?>>Imdb</a></h3>
             <h3>View on <a href=<?php echo $tmdbLink?>>Tmdb</a></h3>

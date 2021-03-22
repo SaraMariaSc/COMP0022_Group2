@@ -14,7 +14,7 @@
         $sql = "SELECT distinct tags FROM Tags WHERE movieId = '$ID'";
         $result = mysqli_query($conn, $sql);
         $tags = mysqli_fetch_array($result);
-        $genreSQL = "SELECT * FROM Movies WHERE movieId = $ID";
+        $genreSQL = "SELECT * FROM Movies WHERE movieId = '$ID'";
         $genreResult = $conn->query($genreSQL);
 
         $xGenres = array();

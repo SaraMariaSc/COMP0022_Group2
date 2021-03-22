@@ -61,6 +61,7 @@
                     echo "<th>Movie</th>";
                     echo "<th>Year</th>";
                     echo "<th>Rating</th>";
+                    echo "<th>Genres</th>";
                     // echo "<th>Stddev</th>";
                 echo "</tr>";
                 echo " </thead>";
@@ -69,11 +70,24 @@
                 $position = 1;
                 
                 while($row = mysqli_fetch_array($result)){
+
+                    //get the genres
+                    $genres = ["Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "FilmNoir", "Horror", "Musical", "Mystery", "Romance", "SciFi",  "Thriller", "War", "Western"];
+                    $sql_genres = "SELECT * FROM Movies WHERE movieId = '".$row['id']."'";
+                    $genre_result = mysqli_query($conn, $sql_genres);
+                    $movie_genres = mysqli_fetch_array($genre_result);
+                    $genre_list = "";
+                    for($i = 0; $i < count($genres); $i++){
+                        if($movie_genres[$genres[$i]] == 1)
+                            $genre_list .= $genres[$i] . " ";   
+                    }
+
                     echo "<tr>";
                     echo "<td>" . $position . "</td>";
                     echo "<td><a href='details.php?ID={$row['id']}'> {$row['title']} </a></td>";
                     echo "<td>" . $row['release_year'] . "</td>";
                     echo "<td>" . $row['rating'] . "</td>";
+                    echo "<td>" . $genre_list . "</td>";
                     // echo "<td>" . $row['stddev'] . "</td>";
                     echo "</tr>";
                     $position = $position + 1; 

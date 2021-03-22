@@ -129,6 +129,8 @@
 
             $genres = ["Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "FilmNoir", "Horror", "Musical", "Mystery", "Romance", "SciFi",  "Thriller", "War", "Western"];
 
+
+            
             //if there are results display them
             if (!mysqli_num_rows($result)==0) 
             {    
@@ -138,6 +140,7 @@
                             echo "<th> </th>";
                             echo "<th scope='col'>Movie</th>";
                             echo "<th scope='col'>Year</th>";
+                            echo "<th scope='col'>Genres</th>";
                             echo "<th scope='col'>Rating</th>";
                             echo "<th scope='col'>Is it polarising?</th>";
                         echo "</tr>";
@@ -146,15 +149,23 @@
                 $position = 1;
                 
                 while($row = mysqli_fetch_array($result)){
+
+                     //get the genres
+                    $sql_genres = "SELECT * FROM Movies WHERE movieId = '".$row['id']."'";
+                    $genre_result = mysqli_query($conn, $sql_genres);
+                    $movie_genres = mysqli_fetch_array($genre_result);
+                    $genre_list = "";
+                    for($i = 0; $i < count($genres); $i++){
+                        if($movie_genres[$genres[$i]] == 1)
+                            $genre_list .= $genres[$i] . " ";   
+                    }
+
+                    
                     echo "<tr>";
                     echo "<td>" . $position . "</td>";
                     echo "<td><a href='details.php?ID={$row['id']}'> {$row['title']} </a></td>";
-                    $movie_genres = array();
-                    // for($i; $i<count($genres); $i++){
-
-                    //     $movie_genres .= $genres[$i] . " ";
-                    // }
                     echo "<td>" . $row['release_year'] . "</td>";
+                    echo "<td>" . $genre_list . "</td>";
                     echo "<td>" . $row['rating'] . "</td>";
 
                     //is it polarising?
